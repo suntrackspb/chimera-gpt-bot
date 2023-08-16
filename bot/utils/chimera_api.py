@@ -3,7 +3,7 @@ import os
 
 import aiohttp
 
-from utils.constants import db_day, db_user
+from bot.utils.constants import db_day, db_user
 
 
 async def make_request(prompt, chat_id):

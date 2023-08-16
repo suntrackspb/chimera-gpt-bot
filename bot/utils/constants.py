@@ -1,4 +1,4 @@
-from database.db import Users, GPTRequest, IMGRequest, DayCounter
+from bot.database.db import Users, GPTRequest, IMGRequest, DayCounter
 
 
 bot_messages = {}

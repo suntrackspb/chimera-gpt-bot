@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database.db import IMGRequest, MEncode
+from bot.database.db import IMGRequest, MEncode
 
 
 app = FastAPI(
