@@ -10,6 +10,6 @@ Stack:
 * Pillow
 * SpeechRecognition
 
-The project is under development, working version:
+**Project on station: Refactoring**
 
 https://t.me/SNTRKGptBot
