@@ -76,35 +76,31 @@ async def handle_voice_message(message: types.Message):
 
 async def handle_text_message(message: types.Message):
     db_user.check_user(message)
-    if not db_user.check_block(message.chat.id):
-        if db_user.check_limit(message.chat.id):
-            # await write_log(message.chat.id, f"USER [TEXT] : {message.text}")
-            db_gpt.add_request(message.chat.id, message.text)
-            await update_messages(bot_messages, message.chat.id, "user", message.text)
-            answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
-            if answer['role'] != 'error':
-                # await write_log(message.chat.id, f"ChatGPT [TEXT] : {answer['content']}")
-                db_gpt.add_answer(message.chat.id, answer['content'])
-                await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
-                if len(answer['content']) > 4095:
-                    await send_long_message(message.chat.id, answer['content'])
-                else:
-                    await bot.send_message(chat_id=message.chat.id, text=answer['content'],
-                                           reply_markup=get_main_keyboard())
-            else:
-                await bot.send_message(chat_id=message.chat.id, text=answer['content'],
-                                       reply_markup=get_main_keyboard())
-        else:
-            await bot.send_message(message.chat.id, text=LIMIT_MSG)
+    if db_user.check_block(message.chat.id):
+        return await message.answer(text=BAN_MSG)
+    if db_user.check_limit(message.chat.id):
+        return await message.answer(text=LIMIT_MSG)
+
+    db_gpt.add_request(message.chat.id, message.text)
+    await update_messages(bot_messages, message.chat.id, "user", message.text)
+    answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
+
+    if answer['role'] == 'error':
+        return await bot.send_message(chat_id=message.chat.id, text=answer['content'], reply_markup=get_main_keyboard())
+
+    db_gpt.add_answer(message.chat.id, answer['content'])
+    await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
+    if len(answer['content']) > 4095:
+        return await send_long_message(message, answer['content'])
     else:
-        await bot.send_message(message.chat.id, text=BAN_MSG)
+        return await message.answer(text=answer['content'], reply_markup=get_main_keyboard())
 
 
-async def send_long_message(chat_id, message):
+async def send_long_message(message, text):
     max_message_size = 4096
-    message_parts = textwrap.wrap(message, max_message_size)
+    message_parts = textwrap.wrap(text, max_message_size)
     for part in message_parts:
-        await bot.send_message(chat_id, part)
+        await message.answer(text=part)
 
 
 def register_user_handlers(dp: Dispatcher):
