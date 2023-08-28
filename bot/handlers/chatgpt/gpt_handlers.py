@@ -8,7 +8,7 @@ from bot.main import bot
 from bot.utils.chimera_api import make_request
 from bot.utils.constants import bot_messages, db_user, db_gpt
 from bot.utils.converters import convert_voice_to_text
-from bot.utils.msg_templates import BAN_MSG
+from bot.utils.msg_templates import BAN_MSG, LIMIT_MSG
 
 
 async def update_messages(msg, uid, role, content):
@@ -67,7 +67,7 @@ async def handle_voice_message(message: types.Message):
             else:
                 await bot.send_message(chat_id=message.chat.id, text=answer['content'])
         else:
-            await bot.send_message(message.chat.id, text="Вы исчерпали суточный лимит")
+            await bot.send_message(message.chat.id, text=LIMIT_MSG)
     else:
         await bot.send_message(message.chat.id, text=BAN_MSG)
     # audio = convert_text_to_voice(answer['content'])
@@ -95,7 +95,7 @@ async def handle_text_message(message: types.Message):
                 await bot.send_message(chat_id=message.chat.id, text=answer['content'],
                                        reply_markup=get_main_keyboard())
         else:
-            await bot.send_message(message.chat.id, text="Вы исчерпали суточный лимит")
+            await bot.send_message(message.chat.id, text=LIMIT_MSG)
     else:
         await bot.send_message(message.chat.id, text=BAN_MSG)
 

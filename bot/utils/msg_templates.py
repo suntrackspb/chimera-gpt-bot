@@ -50,6 +50,8 @@ GALLERY_MSG = """
 
 BAN_MSG = "Вы были заблокированы администратором. Контакты: @suntrackspb"
 
+LIMIT_MSG = "Вы исчерпали суточный лимит"
+
 styles = {
     "DEFAULT": "Без стиля",
     "ANIME": "Anime",
