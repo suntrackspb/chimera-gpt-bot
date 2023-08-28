@@ -4,7 +4,7 @@ from aiogram.dispatcher import Dispatcher
 from bot.database.db import MEncode
 from bot.utils.constants import db_user, db_day
 from bot.utils.msg_templates import ADM_MSG
-from
+from bot.main import bot
 
 
 async def admin_help(message: types.Message):

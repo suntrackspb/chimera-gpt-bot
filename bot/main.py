@@ -33,16 +33,16 @@ load_dotenv(find_dotenv())
 logging.basicConfig(level=logging.INFO)
 
 
-async def update_messages(msg, uid, role, content):
-    if msg.get(uid) is None:
-        msg[uid] = [{'role': role, 'content': content}]
-    else:
-        if len(msg.get(uid)) >= 10:
-            if msg[uid][0]['role'] == 'system':
-                msg[uid].pop(1)
-            else:
-                msg[uid].pop(0)
-        msg[uid].append({'role': role, 'content': content})
+# async def update_messages(msg, uid, role, content):
+#     if msg.get(uid) is None:
+#         msg[uid] = [{'role': role, 'content': content}]
+#     else:
+#         if len(msg.get(uid)) >= 10:
+#             if msg[uid][0]['role'] == 'system':
+#                 msg[uid].pop(1)
+#             else:
+#                 msg[uid].pop(0)
+#         msg[uid].append({'role': role, 'content': content})
 
 
 bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
@@ -209,22 +209,22 @@ async def new_context(message: types.Message):
         await bot.send_message(message.chat.id, text=BAN_MSG)
 
 
-@dp.message_handler(commands="add")
-async def add_context(message: types.Message):
-    db_user.check_user(message)
-    if not db_user.check_block(message.chat.id):
-        text = message.text.removeprefix('/add ')
-        if text != '/add':
-            bot_messages[message.chat.id] = []
-            await update_messages(bot_messages, message.chat.id, "system", text)
-            await message.answer(f"Установлен system context {text}", reply_markup=get_main_keyboard())
-            db_gpt.add_request(message.chat.id, f"SYSTEM: {text}")
-            db_gpt.add_request(message.chat.id, text)
-        else:
-            await message.answer(text=f"Необходимо указать как бот должен себя вести \n"
-                                      f"Например: _/add Действуй как юрист._")
-    else:
-        await bot.send_message(message.chat.id, text=BAN_MSG)
+# @dp.message_handler(commands="add")
+# async def add_context(message: types.Message):
+#     db_user.check_user(message)
+#     if not db_user.check_block(message.chat.id):
+#         text = message.text.removeprefix('/add ')
+#         if text != '/add':
+#             bot_messages[message.chat.id] = []
+#             await update_messages(bot_messages, message.chat.id, "system", text)
+#             await message.answer(f"Установлен system context {text}", reply_markup=get_main_keyboard())
+#             db_gpt.add_request(message.chat.id, f"SYSTEM: {text}")
+#             db_gpt.add_request(message.chat.id, text)
+#         else:
+#             await message.answer(text=f"Необходимо указать как бот должен себя вести \n"
+#                                       f"Например: _/add Действуй как юрист._")
+#     else:
+#         await bot.send_message(message.chat.id, text=BAN_MSG)
 
 
 @dp.message_handler(commands="role")
@@ -247,10 +247,10 @@ async def new_context(message: types.Message):
 #############################
 
 
-@dp.message_handler(commands="admin")
-async def admin_help(message: types.Message):
-    db_user.check_user(message)
-    await message.answer(ADM_MSG, parse_mode='Markdown')
+# @dp.message_handler(commands="admin")
+# async def admin_help(message: types.Message):
+#     db_user.check_user(message)
+#     await message.answer(ADM_MSG, parse_mode='Markdown')
 
 
 # @dp.message_handler(commands=['last'])
@@ -261,97 +261,97 @@ async def admin_help(message: types.Message):
 #     await message.answer(f"{messages}")
 
 
-@dp.message_handler(commands="info")
-async def user_info(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 1)
-        chat_id = int(test[1])
-        user = await bot.get_chat_member(chat_id=chat_id, user_id=int(chat_id))
-        await message.answer(f"{user}")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="write")
-async def write_to_user(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 2)
-        chat_id = int(test[1])
-        text = test[2]
-        await bot.send_message(chat_id=chat_id, text=text)
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="users")
-async def users_list(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        string = ''
-        for user in list(db_user.get_users()):
-            string += f"<code>{user['tid']}</code> [@{user['username']}]\n" \
-                      f"{user['firstname']} {user['lastname']}\n" \
-                      f"token: {user['total_tokens']}, img: {user['imgCount']}, ban: {user['isBlocked']}\n\n"
-
-        await bot.send_message(chat_id=message.chat.id, text=string, parse_mode="HTML")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="user")
-async def user_db_info(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 1)
-        chat_id = int(test[1])
-        result = MEncode(db_user.get_user(chat_id)).encode()
-        my_string = '\n'.join([f'{key}: <code>{value}</code>' for key, value in result.items()])
-        await bot.send_message(chat_id=message.chat.id, text=my_string, parse_mode="HTML")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="limit")
-async def user_db_info(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 2)
-        chat_id = int(test[1])
-        limit = int(test[2])
-        db_user.set_limit(chat_id, limit)
-        await bot.send_message(chat_id=message.chat.id, text="Operation LIMIT complete")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="drop")
-async def user_db_info(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 1)
-        chat_id = int(test[1])
-        db_day.drop_limit(chat_id)
-        await bot.send_message(chat_id=message.chat.id, text="Operation DROP complete")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="ban")
-async def user_db_info(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 1)
-        chat_id = int(test[1])
-        db_user.set_block(chat_id)
-        await bot.send_message(chat_id=message.chat.id, text="Operation BAN complete")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
-
-
-@dp.message_handler(commands="adm")
-async def user_db_info(message: types.Message):
-    if db_user.check_admin(message.chat.id):
-        test = message.text.split(" ", 1)
-        chat_id = int(test[1])
-        db_user.set_admin(chat_id)
-        await bot.send_message(chat_id=message.chat.id, text="Operation ADMIN complete")
-    else:
-        await bot.send_message(message.chat.id, text="Вы не админ!")
+# @dp.message_handler(commands="info")
+# async def user_info(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 1)
+#         chat_id = int(test[1])
+#         user = await bot.get_chat_member(chat_id=chat_id, user_id=int(chat_id))
+#         await message.answer(f"{user}")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="write")
+# async def write_to_user(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 2)
+#         chat_id = int(test[1])
+#         text = test[2]
+#         await bot.send_message(chat_id=chat_id, text=text)
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="users")
+# async def users_list(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         string = ''
+#         for user in list(db_user.get_users()):
+#             string += f"<code>{user['tid']}</code> [@{user['username']}]\n" \
+#                       f"{user['firstname']} {user['lastname']}\n" \
+#                       f"token: {user['total_tokens']}, img: {user['imgCount']}, ban: {user['isBlocked']}\n\n"
+#
+#         await bot.send_message(chat_id=message.chat.id, text=string, parse_mode="HTML")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="user")
+# async def user_db_info(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 1)
+#         chat_id = int(test[1])
+#         result = MEncode(db_user.get_user(chat_id)).encode()
+#         my_string = '\n'.join([f'{key}: <code>{value}</code>' for key, value in result.items()])
+#         await bot.send_message(chat_id=message.chat.id, text=my_string, parse_mode="HTML")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="limit")
+# async def user_db_info(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 2)
+#         chat_id = int(test[1])
+#         limit = int(test[2])
+#         db_user.set_limit(chat_id, limit)
+#         await bot.send_message(chat_id=message.chat.id, text="Operation LIMIT complete")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="drop")
+# async def user_db_info(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 1)
+#         chat_id = int(test[1])
+#         db_day.drop_limit(chat_id)
+#         await bot.send_message(chat_id=message.chat.id, text="Operation DROP complete")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="ban")
+# async def user_db_info(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 1)
+#         chat_id = int(test[1])
+#         db_user.set_block(chat_id)
+#         await bot.send_message(chat_id=message.chat.id, text="Operation BAN complete")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
+#
+#
+# @dp.message_handler(commands="adm")
+# async def user_db_info(message: types.Message):
+#     if db_user.check_admin(message.chat.id):
+#         test = message.text.split(" ", 1)
+#         chat_id = int(test[1])
+#         db_user.set_admin(chat_id)
+#         await bot.send_message(chat_id=message.chat.id, text="Operation ADMIN complete")
+#     else:
+#         await bot.send_message(message.chat.id, text="Вы не админ!")
 
 
 #############################
@@ -359,73 +359,73 @@ async def user_db_info(message: types.Message):
 #############################
 
 
-@dp.message_handler(content_types=types.ContentType.VOICE)
-async def handle_voice_message(message: types.Message):
-    db_user.check_user(message)
-    if not db_user.check_block(message.chat.id):
-        if db_user.check_limit(message.chat.id):
-            file = await bot.get_file(message.voice.file_id)
-            voice_data = BytesIO()
-            await file.download(destination_file=voice_data)
-            text = convert_voice_to_text(voice_data)
-            await update_messages(bot_messages, message.chat.id, "user", text)
-            # await write_log(message.chat.id, f"USER [VOICE] : {text}")
-            db_gpt.add_request(message.chat.id, text)
-            answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
-            if answer['role'] != 'error':
-                await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
-                # await write_log(message.chat.id, f"ChatGPT [VOICE] : {answer['content']}")
-                db_gpt.add_answer(message.chat.id, answer['content'])
-                if len(answer['content']) > 4095:
-                    await send_long_message(message.chat.id, answer['content'])
-                else:
-                    await bot.send_message(
-                        chat_id=message.chat.id,
-                        text=answer['content'],
-                        reply_markup=get_main_keyboard()
-                    )
-            else:
-                await bot.send_message(chat_id=message.chat.id, text=answer['content'])
-        else:
-            await bot.send_message(message.chat.id, text="Вы исчерпали суточный лимит")
-    else:
-        await bot.send_message(message.chat.id, text=BAN_MSG)
+# @dp.message_handler(content_types=types.ContentType.VOICE)
+# async def handle_voice_message(message: types.Message):
+#     db_user.check_user(message)
+#     if not db_user.check_block(message.chat.id):
+#         if db_user.check_limit(message.chat.id):
+#             file = await bot.get_file(message.voice.file_id)
+#             voice_data = BytesIO()
+#             await file.download(destination_file=voice_data)
+#             text = convert_voice_to_text(voice_data)
+#             await update_messages(bot_messages, message.chat.id, "user", text)
+#             # await write_log(message.chat.id, f"USER [VOICE] : {text}")
+#             db_gpt.add_request(message.chat.id, text)
+#             answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
+#             if answer['role'] != 'error':
+#                 await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
+#                 # await write_log(message.chat.id, f"ChatGPT [VOICE] : {answer['content']}")
+#                 db_gpt.add_answer(message.chat.id, answer['content'])
+#                 if len(answer['content']) > 4095:
+#                     await send_long_message(message.chat.id, answer['content'])
+#                 else:
+#                     await bot.send_message(
+#                         chat_id=message.chat.id,
+#                         text=answer['content'],
+#                         reply_markup=get_main_keyboard()
+#                     )
+#             else:
+#                 await bot.send_message(chat_id=message.chat.id, text=answer['content'])
+#         else:
+#             await bot.send_message(message.chat.id, text="Вы исчерпали суточный лимит")
+#     else:
+#         await bot.send_message(message.chat.id, text=BAN_MSG)
     # audio = convert_text_to_voice(answer['content'])
     # await bot.send_voice(chat_id=message.chat.id, voice=audio)
 
 
-@dp.message_handler()
-async def handle_text_message(message: types.Message):
-    db_user.check_user(message)
-    if not db_user.check_block(message.chat.id):
-        if db_user.check_limit(message.chat.id):
-            # await write_log(message.chat.id, f"USER [TEXT] : {message.text}")
-            db_gpt.add_request(message.chat.id, message.text)
-            await update_messages(bot_messages, message.chat.id, "user", message.text)
-            answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
-            if answer['role'] != 'error':
-                # await write_log(message.chat.id, f"ChatGPT [TEXT] : {answer['content']}")
-                db_gpt.add_answer(message.chat.id, answer['content'])
-                await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
-                if len(answer['content']) > 4095:
-                    await send_long_message(message.chat.id, answer['content'])
-                else:
-                    await bot.send_message(chat_id=message.chat.id, text=answer['content'],
-                                           reply_markup=get_main_keyboard())
-            else:
-                await bot.send_message(chat_id=message.chat.id, text=answer['content'],
-                                       reply_markup=get_main_keyboard())
-        else:
-            await bot.send_message(message.chat.id, text="Вы исчерпали суточный лимит")
-    else:
-        await bot.send_message(message.chat.id, text=BAN_MSG)
+# @dp.message_handler()
+# async def handle_text_message(message: types.Message):
+#     db_user.check_user(message)
+#     if not db_user.check_block(message.chat.id):
+#         if db_user.check_limit(message.chat.id):
+#             # await write_log(message.chat.id, f"USER [TEXT] : {message.text}")
+#             db_gpt.add_request(message.chat.id, message.text)
+#             await update_messages(bot_messages, message.chat.id, "user", message.text)
+#             answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
+#             if answer['role'] != 'error':
+#                 # await write_log(message.chat.id, f"ChatGPT [TEXT] : {answer['content']}")
+#                 db_gpt.add_answer(message.chat.id, answer['content'])
+#                 await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
+#                 if len(answer['content']) > 4095:
+#                     await send_long_message(message.chat.id, answer['content'])
+#                 else:
+#                     await bot.send_message(chat_id=message.chat.id, text=answer['content'],
+#                                            reply_markup=get_main_keyboard())
+#             else:
+#                 await bot.send_message(chat_id=message.chat.id, text=answer['content'],
+#                                        reply_markup=get_main_keyboard())
+#         else:
+#             await bot.send_message(message.chat.id, text="Вы исчерпали суточный лимит")
+#     else:
+#         await bot.send_message(message.chat.id, text=BAN_MSG)
 
 
-async def send_long_message(chat_id, message):
-    max_message_size = 4096
-    message_parts = textwrap.wrap(message, max_message_size)
-    for part in message_parts:
-        await bot.send_message(chat_id, part)
+# async def send_long_message(chat_id, message):
+#     max_message_size = 4096
+#     message_parts = textwrap.wrap(message, max_message_size)
+#     for part in message_parts:
+#         await bot.send_message(chat_id, part)
 
 
 if __name__ == '__main__':
