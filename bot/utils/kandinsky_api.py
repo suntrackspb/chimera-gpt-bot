@@ -2,6 +2,7 @@ import asyncio
 import base64
 import json
 import os
+import io
 import random
 import string
 import time
@@ -10,6 +11,14 @@ from io import BytesIO
 import requests
 
 url = 'https://api.fusionbrain.ai/web/api/v1/text2image/run?model_id=1'
+
+
+async def generate_image(style, desc, tlg):
+    img_id = await run_generate(style, desc)
+    if img_id is not False:
+        data = await get_image(img_id)
+        file = await save_image(data, tlg)
+        return {"filename": file, "image": io.BytesIO(base64.b64decode(data))}
 
 
 def generate_string():
