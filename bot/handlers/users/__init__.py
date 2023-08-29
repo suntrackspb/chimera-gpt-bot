@@ -1,0 +1,2 @@
+from .chatgpt_handlers import register_chatgpt_handlers
+from .kandinsky_handlers import register_kandinsky_handlers

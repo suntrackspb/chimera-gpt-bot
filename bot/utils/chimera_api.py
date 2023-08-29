@@ -20,6 +20,7 @@ async def make_request(prompt, chat_id):
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
             response_text = await response.json()
+            print(response_text)
             answer = {}
             if 'error' in response_text:
                 answer['role'] = 'error'

@@ -111,8 +111,8 @@ class Users:
         user = self.conn.find_one({"tid": tid})
         count = DayCounter().get_count(tid)
         if count >= user['total_per_day']:
-            return False
-        return True
+            return True
+        return False
 
     def upd_last_used(self, tid):
         self.conn.update_one({"tid": tid}, {"$set": {"last_used": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}})
