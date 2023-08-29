@@ -105,7 +105,7 @@ async def user_set_admin(message: types.Message):
         await message.answer(text="Вы не админ!")
 
 
-def register_user_handlers(dp: Dispatcher):
+def register_admins_handlers(dp: Dispatcher):
     dp.register_message_handler(admin_help, commands="admin")
     dp.register_message_handler(user_info, commands="info")
     dp.register_message_handler(write_to_user, commands="write")

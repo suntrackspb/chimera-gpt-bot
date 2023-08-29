@@ -26,6 +26,7 @@ from utils.constants import bot_messages, block, db_day, db_user, db_gpt, db_img
 from keyboards.main_keyboard import get_main_keyboard
 from keyboards.style_keyboard import get_style_keyboard
 from keyboards.gallery_keyboard import get_gallery_keyboard
+from bot.handlers.admins.admin_handlers import register_admins_handlers
 
 
 load_dotenv(find_dotenv())
@@ -73,6 +74,8 @@ async def error_handler(update, exception):
 
 
 dp.register_errors_handler(error_handler)
+
+register_admins_handlers(dp)
 
 
 async def generate_image(style, desc, tlg):
@@ -239,7 +242,10 @@ async def new_context(message: types.Message):
         else:
             await message.answer("Конкретная роль ещё не была установлена.\nСмотри /help")
     else:
-        await bot.send_message(message.chat.id, text=BAN_MSG)
+        await message.answer(text=BAN_MSG)
+
+
+
 
 
 #############################
