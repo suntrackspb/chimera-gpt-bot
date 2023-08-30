@@ -1,13 +1,16 @@
-FROM python:3.11
+FROM python:3.11-slim
 
 WORKDIR /bot
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 COPY requirements.txt .
 
-RUN python -m pip install --upgrade pip
+RUN pip install --upgrade pip && pip install -r requirements.txt --no-cache-dir
 
-RUN pip install --no-cache-dir -r requirements.txt
+COPY .env .
 
-COPY .. .
+COPY /bot/. .
 
-CMD ["python", "main.py"]
+CMD ["python", "run.py"]
