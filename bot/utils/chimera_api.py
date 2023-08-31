@@ -28,4 +28,6 @@ async def make_request(prompt, chat_id):
                 return response_text['choices'][0]['message']
             db_user.upd_gpt_count(chat_id, response_text['usage'])
             db_day.execute_counter(chat_id, response_text['usage']['total_tokens'])
-            return response_text['choices'][0]['message']
+            choices = response_text.get('choices')
+            if choices is not None:
+                return choices[0].get('message')
