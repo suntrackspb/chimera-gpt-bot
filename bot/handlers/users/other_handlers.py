@@ -4,6 +4,7 @@ from bot.loader import bot
 from bot.utils.msg_templates import HELP_MSG, BAN_MSG, get_profile_msg, GALLERY_MSG
 from bot.utils.constants import bot_messages, db_day, db_user, db_gpt
 from bot.keyboards.main_keyboard import get_main_keyboard
+from bot.keyboards.gallery_keyboard import get_gallery_keyboard
 
 
 async def start(message: types.Message):
@@ -12,7 +13,7 @@ async def start(message: types.Message):
 
 
 async def show_gallery(message: types.Message):
-    await bot.send_message(message.chat.id, text=GALLERY_MSG, reply_markup=get_main_keyboard())
+    await bot.send_message(message.chat.id, text=GALLERY_MSG, reply_markup=get_gallery_keyboard())
 
 
 async def new_context(message: types.Message):

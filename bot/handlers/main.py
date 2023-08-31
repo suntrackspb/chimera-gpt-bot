@@ -10,10 +10,10 @@ from bot.handlers.errors import register_error_handlers
 def register_all_handlers(dp: Dispatcher) -> None:
     handlers = (
         register_admin_handlers,
-        register_chatgpt_handlers,
         register_error_handlers,
         register_kandinsky_handlers,
         register_other_handlers,
+        register_chatgpt_handlers,
     )
     for handler in handlers:
         handler(dp)

@@ -106,4 +106,4 @@ async def send_long_message(message, text):
 def register_chatgpt_handlers(dp: Dispatcher):
     dp.register_message_handler(add_context, commands="add")
     dp.register_message_handler(handle_voice_message, content_types=types.ContentType.VOICE)
-    dp.register_message_handler(handle_text_message, content_types=types.ContentType.TEXT)
+    dp.register_message_handler(handle_text_message)

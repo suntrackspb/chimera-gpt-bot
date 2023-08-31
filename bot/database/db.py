@@ -47,7 +47,7 @@ class Users:
             "firstname": first_name,
             "lastname": last_name,
             "username": username,
-            "total_per_day": 30000,
+            "total_per_day": 10000,
             "prompt_tokens": 0,
             "completion_tokens": 0,
             "total_tokens": 0,
