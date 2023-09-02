@@ -34,4 +34,5 @@ class ThrottlingMiddleware(BaseMiddleware):
 
     async def message_throttled(self, message: types.Message, throttled: Throttled):
         if throttled.exceeded_count <= 2:
+            print(self.rate_limit)
             await message.reply("Too many requests!")
