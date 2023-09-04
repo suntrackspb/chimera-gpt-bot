@@ -18,6 +18,8 @@ pymongo==4.4.1
 python-dotenv==1.0.0
 pytz==2023.3
 requests==2.31.0
+redis==5.0.0
+rembg==2.0.50
 SpeechRecognition==3.10.0
 urllib3==2.0.4
 yarl==1.9.2
