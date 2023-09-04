@@ -2,7 +2,7 @@ from aiogram import Dispatcher, types
 
 from bot.loader import bot
 from bot.utils.msg_templates import HELP_MSG, BAN_MSG, get_profile_msg, GALLERY_MSG
-from bot.utils.constants import bot_messages, db_day, db_user, db_gpt
+from bot.utils.constants import bot_messages, db_day, db_user, db_gpt, rm_bg
 from bot.keyboards.main_keyboard import get_main_keyboard
 from bot.keyboards.gallery_keyboard import get_gallery_keyboard
 
@@ -36,6 +36,10 @@ async def profile(message: types.Message):
         await bot.send_message(message.chat.id, text=BAN_MSG)
 
 
+async def check_rm_bg(message: types.Message):
+    await message.answer(rm_bg)
+
+
 def register_other_handlers(dp: Dispatcher):
     dp.register_message_handler(profile, commands="profile")
     dp.register_message_handler(profile, lambda message: message.text == "⚙️ Профиль")
@@ -44,3 +48,4 @@ def register_other_handlers(dp: Dispatcher):
     dp.register_message_handler(show_gallery, commands="gallery")
     dp.register_message_handler(show_gallery, lambda message: message.text == "🖼 Галерея")
     dp.register_message_handler(start, commands=["start", "help"])
+    dp.register_message_handler(check_rm_bg, commands="bg")
