@@ -1,3 +1,4 @@
 from .chatgpt_handlers import register_chatgpt_handlers
 from .kandinsky_handlers import register_kandinsky_handlers
 from .other_handlers import register_other_handlers
+from .remove_bg import register_remove_bg_handlers

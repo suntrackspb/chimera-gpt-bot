@@ -4,7 +4,12 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv(".env.local"))
+if os.getenv("MODE") == "PROD":
+    env = ".env.prod"
+else:
+    env = ".env.local"
+
+load_dotenv(find_dotenv(env))
 
 bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
 dp = Dispatcher(bot, storage=MemoryStorage())
