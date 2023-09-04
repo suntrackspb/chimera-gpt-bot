@@ -1,8 +1,6 @@
-import os
 from pathlib import Path
 
 from aiogram import Dispatcher, types
-from bot.utils.constants import rm_bg
 from bot.celery_tasks.remove_backgroud import remove_background_from_image
 
 
