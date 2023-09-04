@@ -8,6 +8,6 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - .env.local
     environment:
       DB_HOST: mongo

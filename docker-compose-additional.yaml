@@ -3,6 +3,7 @@ version: '3.1'
 services:
 
   mongo:
+    container_name: chimera-mongo
     image: mongo
     restart: always
     ports:
@@ -12,6 +13,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
 
   mongo-express:
+    container_name: chimera-mongo-express
     image: mongo-express
     restart: always
     ports:
@@ -21,7 +23,12 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
 
-
+  cache:
+    container_name: chimera_redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
 
 #services:
 #  bot:
