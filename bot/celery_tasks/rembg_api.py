@@ -17,7 +17,7 @@ def api_remove_background(uid: str, flag: str, filename: str):
         img_type = "webp"
 
     headers = {
-        "Content-Type": "multipart/form-data"
+        'accept': 'application/json',
     }
 
     params = {
@@ -34,7 +34,7 @@ def api_remove_background(uid: str, flag: str, filename: str):
 
     if response.status_code == 200:
         print("Successful Response")
-        print(response.json())
+        print(response.url, response.json())
     elif response.status_code == 422:
         print("Validation Error")
         print(response.json())
