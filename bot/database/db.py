@@ -56,9 +56,24 @@ class Users:
             "isBlocked": False,
             "last_used": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-
+            "isFollower": True,
         }
         return self.conn.insert_one(data).inserted_id
+
+    def mass_users(self):
+        return self.conn.find(
+            {
+                "isBlocked": False,
+                "isFollower": True,
+            },
+            {
+                "_id": 0,
+                "tid": 1,
+            }
+        )
+
+    def mass_set_follower(self, tid, follower=False):
+        self.conn.update_one({"tid": tid}, [{'$set': {'isFollower': follower}}])
 
     def check_user(self, message):
         tid = message.chat.id

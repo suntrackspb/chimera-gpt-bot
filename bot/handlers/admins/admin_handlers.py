@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
+from aiogram.utils.exceptions import BotBlocked
 
 from bot.database.db import MEncode
 from bot.utils.constants import db_user, db_day
@@ -15,6 +16,19 @@ async def get_id(message: types.Message):
 async def admin_help(message: types.Message):
     if await validate_user_is_admin(message):
         await message.answer(ADM_MSG, parse_mode='Markdown')
+
+
+async def mass_message(message: types.Message):
+    if await validate_user_is_admin(message):
+        text = message.text.split(" ", 1)[1]
+        users = db_user.mass_users()
+        for user in users:
+            try:
+                print(user['tid'])
+                await bot.send_message(user['tid'], text)
+            except BotBlocked as ex:
+                db_user.mass_set_follower(user['tid'])
+                print(ex)
 
 
 async def user_info(message: types.Message):
@@ -88,6 +102,7 @@ async def user_set_admin(message: types.Message):
 
 def register_admin_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(get_id, commands="id")
+    dp.register_message_handler(mass_message, commands="mass")
     dp.register_message_handler(admin_help, commands="admin")
     dp.register_message_handler(user_info, commands="info")
     dp.register_message_handler(write_to_user, commands="write")

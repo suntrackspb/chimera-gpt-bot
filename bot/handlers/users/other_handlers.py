@@ -9,6 +9,12 @@ from bot.keyboards.gallery_keyboard import get_gallery_keyboard
 
 async def start(message: types.Message):
     db_user.check_user(message)
+    db_user.mass_set_follower(message.chat.id, True)
+    await message.answer(HELP_MSG, parse_mode='Markdown', reply_markup=get_main_keyboard())
+
+
+async def help_msg(message: types.Message):
+    db_user.check_user(message)
     await message.answer(HELP_MSG, parse_mode='Markdown', reply_markup=get_main_keyboard())
 
 
@@ -47,5 +53,6 @@ def register_other_handlers(dp: Dispatcher):
     dp.register_message_handler(new_context, lambda message: message.text == "📄 Очистить контекст")
     dp.register_message_handler(show_gallery, commands="gallery")
     dp.register_message_handler(show_gallery, lambda message: message.text == "🖼 Галерея")
-    dp.register_message_handler(start, commands=["start", "help"])
+    dp.register_message_handler(start, commands="start",)
+    dp.register_message_handler(help_msg, commands="help")
     dp.register_message_handler(check_rm_bg, commands="bg")

@@ -24,7 +24,7 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
 
   redis:
-    container_name: chimera_redis
+    container_name: chimera-redis
     image: redis:latest
     restart: always
     ports:
