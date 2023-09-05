@@ -1,19 +1,22 @@
+import os
 from pathlib import Path
 
 from aiogram import Dispatcher, types
-from bot.celery_tasks.remove_backgroud import remove_background_from_image
+from bot.celery_tasks.rembg_local import local_remove_background
+from bot.celery_tasks.rembg_api import api_remove_background
 
 
 async def remove_bg(message: types.Message):
-    text = message.caption
     photo = message.photo[-1]
     filename = f"bot/temp/{message.chat.id}"
     if not Path(filename).exists():
         await photo.download(destination_file=filename)
-        if text == "s":
-            remove_background_from_image.delay(filename, "webp")
+        if os.getenv("REMBG_API"):
+            api_remove_background.delay(message.chat.id, message.caption, filename)
+            print("use api")
         else:
-            remove_background_from_image.delay(filename, "png")
+            local_remove_background.delay(message.chat.id, message.caption, filename)
+            print("use local")
         await message.reply("Запущена обработка изображения...")
     else:
         await message.reply("Уже выполняется, дождитесь окончания")
