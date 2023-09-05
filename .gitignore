@@ -125,7 +125,8 @@ celerybeat.pid
 # Environments
 no_git/.env
 .env
-.env.*
+.env.local
+.env.prod
 .venv
 env/
 venv/
