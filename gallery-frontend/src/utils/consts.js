@@ -1,0 +1,1 @@
+export const IMAGES_PATH = 'https://sntrk.ru/gallery/images/'

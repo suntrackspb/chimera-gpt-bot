@@ -1,0 +1,56 @@
+@import url('./styles/variables.css');
+
+* {
+  margin: 0;
+  padding: 0;box-sizing: border-box;
+}
+body {
+  font-family: Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: var(--bg-color);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+header {
+  padding: 20px;
+}
+
+main {
+  padding: 20px 0;
+}
+
+button {
+  outline: none;
+  border: none;
+  display: block;
+  background-color: transparent;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

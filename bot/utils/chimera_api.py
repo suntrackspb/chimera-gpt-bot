@@ -5,15 +5,20 @@ import aiohttp
 
 from bot.utils.constants import db_day, db_user
 
+API_URL = os.getenv("AI_URL")
+API_KEY = os.getenv("AI_KEY")
+API_MOD = os.getenv("AI_MODEL")
+
+
 
 async def make_request(prompt, chat_id):
-    url = 'https://chimeragpt.adventblocks.cc/api/v1/chat/completions'
+    url = API_URL
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': f'Bearer {os.getenv("CHIMERA_API_KEY")}'
+        'Authorization': f'Bearer {API_KEY}'
     }
     data = {
-        'model': 'gpt-3.5-turbo',
+        'model': API_MOD,
         'messages': prompt
     }
 

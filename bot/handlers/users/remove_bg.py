@@ -13,10 +13,8 @@ async def remove_bg(message: types.Message):
         await photo.download(destination_file=filename)
         if os.getenv("REMBG_API"):
             api_remove_background.delay(message.chat.id, message.caption, filename)
-            # print("use api")
         else:
             local_remove_background.delay(message.chat.id, message.caption, filename)
-            # print("use local")
         await message.reply("Запущена обработка изображения...")
     else:
         await message.reply("Уже выполняется, дождитесь окончания")
