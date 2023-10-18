@@ -18,7 +18,7 @@ In general, this Telegram chatbot is a universal tool for users who are looking 
 
 **_Used:_**
 * NagaAI Api or OpenAi Api
-* Unofficial requests to Kandinsky
+* Generate images from NagaAI
 * rembg with u2net 
 
 

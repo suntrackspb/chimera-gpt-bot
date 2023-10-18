@@ -5,7 +5,7 @@ from aiogram import types, Dispatcher
 
 from bot.keyboards.main_keyboard import get_main_keyboard
 from bot.main import bot
-from bot.utils.chimera_api import make_request
+from bot.utils.naga_ai import generate_chatgpt
 from bot.utils.constants import bot_messages, db_user, db_gpt
 from bot.utils.converters import convert_voice_to_text
 from bot.utils.msg_templates import BAN_MSG, LIMIT_MSG
@@ -51,7 +51,7 @@ async def handle_voice_message(message: types.Message):
             await update_messages(bot_messages, message.chat.id, "user", text)
             # await write_log(message.chat.id, f"USER [VOICE] : {text}")
             db_gpt.add_request(message.chat.id, text)
-            answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
+            answer = await generate_chatgpt(message.chat.id, bot_messages.get(message.chat.id))
             if answer['role'] != 'error':
                 await update_messages(bot_messages, message.chat.id, answer['role'], answer['content'])
                 # await write_log(message.chat.id, f"ChatGPT [VOICE] : {answer['content']}")
@@ -83,7 +83,7 @@ async def handle_text_message(message: types.Message):
 
     db_gpt.add_request(message.chat.id, message.text)
     await update_messages(bot_messages, message.chat.id, "user", message.text)
-    answer = await make_request(bot_messages.get(message.chat.id), message.chat.id)
+    answer = await generate_chatgpt(message.chat.id, bot_messages.get(message.chat.id))
 
     if answer['role'] == 'error':
         return await bot.send_message(chat_id=message.chat.id, text=answer['content'], reply_markup=get_main_keyboard())

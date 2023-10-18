@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def get_date(formats: str):
+    return datetime.strptime(datetime.now().strftime(formats), formats)
+
+
 class MongoJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
@@ -54,8 +58,8 @@ class Users:
             "imgCount": 0,
             "isAdmin": False,
             "isBlocked": False,
-            "last_used": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "last_used": get_date("%Y-%m-%d %H:%M:%S"),
+            "created_at": get_date("%Y-%m-%d %H:%M:%S"),
             "isFollower": True,
         }
         return self.conn.insert_one(data).inserted_id
@@ -130,7 +134,7 @@ class Users:
         return False
 
     def upd_last_used(self, tid):
-        self.conn.update_one({"tid": tid}, {"$set": {"last_used": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}})
+        self.conn.update_one({"tid": tid}, {"$set": {"last_used": get_date("%Y-%m-%d %H:%M:%S")}})
 
     def upd_gpt_count(self, tid, usage):
         self.upd_last_used(tid)
@@ -160,7 +164,7 @@ class GPTRequest:
             "tid": tid,
             "type": "user",
             "text": text,
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": get_date("%Y-%m-%d %H:%M:%S")
         }
         self.conn.insert_one(data)
 
@@ -169,7 +173,7 @@ class GPTRequest:
             "tid": tid,
             "type": "gpt",
             "text": text,
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": get_date("%Y-%m-%d %H:%M:%S")
         }
         self.conn.insert_one(data)
 
@@ -186,7 +190,7 @@ class IMGRequest:
             "prompt": prompt,
             "style": style,
             "public": False,
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": get_date("%Y-%m-%d %H:%M:%S")
         }
         Users().upd_img_count(tid)
         self.conn.insert_one(data)
@@ -212,30 +216,30 @@ class DayCounter:
         data = {
             "tid": tid,
             "count": total_count,
-            "date": datetime.now().strftime("%Y-%m-%d")
+            "date": get_date("%Y-%m-%d")
         }
         self.conn.insert_one(data)
 
     def update_day_limit(self, tid, total_count):
         return self.conn.update_one(
-            {"tid": tid, "date": datetime.now().strftime("%Y-%m-%d")},
+            {"tid": tid, "date": get_date("%Y-%m-%d")},
             {
                 "$inc": {"count": total_count}
             }
         )
 
     def execute_counter(self, tid, total_count):
-        doc = self.conn.find_one({"tid": tid, "date": datetime.now().strftime("%Y-%m-%d")})
+        doc = self.conn.find_one({"tid": tid, "date": get_date("%Y-%m-%d")})
         if doc is None:
             self.add_day_limit(tid, total_count)
         else:
             self.update_day_limit(tid, total_count)
 
     def get_count(self, tid):
-        count = self.conn.find_one({"tid": tid, "date": datetime.now().strftime("%Y-%m-%d")})
+        count = self.conn.find_one({"tid": tid, "date": get_date("%Y-%m-%d")})
         if count is None:
             return 0
         return count['count']
 
     def drop_limit(self, tid):
-        self.conn.update_one({"tid": tid, "date": datetime.now().strftime("%Y-%m-%d")}, {"$set": {"count": 0}})
+        self.conn.update_one({"tid": tid, "date": get_date("%Y-%m-%d")}, {"$set": {"count": 0}})
