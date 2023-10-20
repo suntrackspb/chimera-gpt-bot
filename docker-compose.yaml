@@ -8,6 +8,7 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - .env.local
+      - .env.docker
     environment:
+      MODE: DOCKER
       DB_HOST: mongo

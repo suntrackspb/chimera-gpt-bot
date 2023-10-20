@@ -42,12 +42,7 @@ async def generate_image(chat_id: str, model: str, prompt: str, count: int = 1) 
 async def generate_chatgpt(chat_id: str, prompt: str) -> dict:
     response_text = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
-        messages=[
-            {
-                'role': 'user',
-                'content': prompt
-            },
-        ],
+        messages=prompt,
         allow_fallback=True
     )
 
